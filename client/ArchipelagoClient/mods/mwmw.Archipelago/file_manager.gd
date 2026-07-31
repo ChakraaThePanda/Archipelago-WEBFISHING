@@ -10,6 +10,10 @@ var _slot_info = null
 
 
 func create_data_files():
+	# inventory_loc/locations_loc aren't known yet at this point (they depend on the seed
+	# name and loaded slot respectively, set once a connection/game session actually starts) -
+	# save_inventory()/save_locations() create their files on demand once those are set, so
+	# only the directories need to exist ahead of time here.
 	var file = File.new()
 	var dir = Directory.new()
 	if not dir.dir_exists("user://ap_data/"):
@@ -18,16 +22,8 @@ func create_data_files():
 		file.close()
 		file.open(_CONN_CACHE_LOC, File.WRITE)
 		file.close()
-		file.open(inventory_loc, File.WRITE)
-		file.close()
-		file.open(locations_loc, File.WRITE)
-		file.close()
 	if not dir.dir_exists("user://ap_data/seeds/"):
 		dir.make_dir("user://ap_data/seeds/")
-		file.open(inventory_loc, File.WRITE)
-		file.close()
-		file.open(locations_loc, File.WRITE)
-		file.close()
 
 
 func get_inventory():
@@ -87,6 +83,10 @@ func get_name_from_id(slot, id, type):
 
 
 func save_inventory(inventory):
+	# guards against UserSave's "_slot_saved" firing (a normal in-game save) before
+	# inventory_loc is set, which only happens once a server connection is attempted
+	if inventory_loc == null:
+		return
 	var file = File.new()
 	file.open(inventory_loc, File.WRITE)
 	file.store_string(to_json(inventory))
@@ -94,6 +94,9 @@ func save_inventory(inventory):
 
 
 func save_locations(locations):
+	# same guard as save_inventory() - locations_loc is only set once a game session starts
+	if locations_loc == null:
+		return
 	var file = File.new()
 	file.open(locations_loc, File.WRITE)
 	file.store_string(to_json(locations))

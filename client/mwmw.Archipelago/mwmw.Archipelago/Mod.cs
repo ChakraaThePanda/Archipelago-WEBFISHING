@@ -21,6 +21,7 @@ public class Mod : IMod {
         modInterface.RegisterScriptMod(new LockButtons());
         modInterface.RegisterScriptMod(new GoalRank());
         modInterface.RegisterScriptMod(new GoalCompletion());
+        modInterface.RegisterScriptMod(new FishSanityCheck());
         modInterface.RegisterScriptMod(new HandleCamp());
         modInterface.RegisterScriptMod(new ReobtainBones());
         modInterface.RegisterScriptMod(new UpdateRodDescription());

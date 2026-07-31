@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+
+# Release artifacts: kept here for convenience so they can be attached to a GitHub
+# release, but they're generated/copied output, not source -- never commit them.
+/webfishing.apworld
+/mwmw.Archipelago.zip
+/WEBFISHING.yaml
+
+# Internal dev notes, if any end up here -- kept locally, deliberately not published.
+# Player-facing docs live under worlds/webfishing/docs/ instead, which ships inside
+# the apworld and isn't ignored.
+/docs/

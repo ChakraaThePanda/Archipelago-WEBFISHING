@@ -105,6 +105,19 @@ def populate_advancement_tables():
         if key not in traveler:
             harmonised_base[key] = standard_base[key]
 
+    # --- FISHSANITY --- #
+    # one location per (species, quality) pair, kept fully separate from the quest-based
+    # category_mapping dicts above - placed into regions directly in __init__.py, gated by
+    # the fish_sanity option, so this never interacts with the harmonised_base filtering logic.
+    counter = 0
+    for tier, fish_list in FISH_ROSTER.items():
+        for internal_id, display_name in fish_list:
+            for quality in FISH_QUALITIES:
+                title = f"{display_name} ({quality})"
+                fish_sanity_categories[tier][title] = AdvData(fish_sanity_offset + counter)
+                counter += 1
+
+
 def assign_rod(name, title, item):
     for category, catches in rod_categories.items():
         if name in catches:
@@ -189,6 +202,77 @@ quest_offset: int = 94200
 item_offset: int = 94700
 shop_offset: int = 95200
 
+# --- FISHSANITY --- #
+# Internal ids match the "fish_*"/"wtrash_*" ids used by the client mod's harmonized loot
+# tables (client/ArchipelagoClient/mods/mwmw.Archipelago/main.gd, _generate_alt_loot_tables)
+# and the display names/tiers match loottables.md. "simple" is the junk pool caught on the
+# starter Simple Rod (never gated behind an item, unlike every other tier) - Diamond lives
+# in "prosperous" since it only shows up in that rod's loot table.
+FISH_QUALITIES = ["Normal", "Shining", "Glistening", "Opulent", "Radiant", "Alpha"]
+
+FISH_ROSTER = {
+    "simple": [
+        ("wtrash_bone", "Bone"), ("wtrash_boot", "Boot"), ("wtrash_branch", "Branch"),
+        ("wtrash_drink_rings", "Drink Rings"), ("wtrash_plastic_bag", "Plastic Bag"),
+        ("wtrash_sodacan", "Soda Can"), ("wtrash_weed", "Seaweed"),
+    ],
+    "traveler": [
+        ("fish_lake_salmon", "Salmon"), ("fish_lake_bass", "Largemouth Bass"), ("fish_lake_carp", "Carp"),
+        ("fish_lake_rainbowtrout", "Rainbow Trout"), ("fish_lake_bluegill", "Bluegill"), ("fish_lake_perch", "Perch"),
+        ("fish_lake_walleye", "Walleye"), ("fish_lake_goldfish", "Goldfish"),
+        ("fish_ocean_atlantic_salmon", "Atlantic Salmon"), ("fish_ocean_herring", "Herring"),
+        ("fish_ocean_flounder", "Flounder"), ("fish_ocean_clownfish", "Clownfish"), ("fish_ocean_shrimp", "Shrimp"),
+        ("fish_ocean_angelfish", "Angelfish"), ("fish_ocean_grouper", "Grouper"),
+    ],
+    "collector": [
+        ("fish_lake_crayfish", "Crayfish"), ("fish_lake_drum", "Drum"), ("fish_lake_guppy", "Guppy"),
+        ("fish_lake_snail", "Snail"), ("fish_lake_frog", "Frog"), ("fish_lake_crab", "Crab"),
+        ("fish_ocean_krill", "Krill"), ("fish_ocean_oyster", "Oyster"), ("fish_ocean_bluefish", "Bluefish"),
+        ("fish_ocean_lobster", "Lobster"), ("fish_ocean_tuna", "Tuna"), ("fish_ocean_seahorse", "Seahorse"),
+        ("fish_ocean_sunfish", "Sunfish"), ("fish_ocean_swordfish", "Swordfish"),
+    ],
+    "shining": [
+        ("fish_lake_catfish", "Catfish"), ("fish_lake_crappie", "Crappie"), ("fish_lake_pike", "Pike"),
+        ("fish_lake_bowfin", "Bowfin"), ("fish_lake_koi", "Koi"), ("fish_lake_sturgeon", "Sturgeon"),
+        ("fish_ocean_marlin", "Marlin"), ("fish_ocean_octopus", "Octopus"), ("fish_ocean_stingray", "Stingray"),
+        ("fish_ocean_eel", "Eel"), ("fish_ocean_dogfish", "Dogfish"), ("fish_ocean_lionfish", "Lionfish"),
+    ],
+    "glistening": [
+        ("fish_lake_leech", "Leech"), ("fish_lake_turtle", "Turtle"), ("fish_lake_toad", "Toad"),
+        ("fish_ocean_sawfish", "Sawfish"), ("fish_ocean_wolffish", "Wolffish"),
+        ("fish_ocean_hammerhead_shark", "Hammerhead Shark"),
+    ],
+    "opulent": [
+        ("fish_lake_muskellunge", "Muskellunge"), ("fish_lake_kingsalmon", "King Salmon"), ("fish_lake_gar", "Gar"),
+        ("fish_ocean_sea_turtle", "Sea Turtle"), ("fish_ocean_squid", "Squid"), ("fish_ocean_manowar", "Man O' War"),
+        ("fish_ocean_manta_ray", "Manta Ray"),
+    ],
+    "radiant": [
+        ("fish_lake_pupfish", "Pupfish"), ("fish_lake_axolotl", "Axolotl"), ("fish_lake_mooneye", "Mooneye"),
+        ("fish_ocean_greatwhiteshark", "Great White Shark"),
+    ],
+    "alpha": [
+        ("fish_lake_alligator", "Alligator"), ("fish_lake_bullshark", "Bullshark"),
+        ("fish_ocean_whale", "Whale"), ("fish_ocean_coalacanth", "Coelacanth"),
+    ],
+    "prosperous": [
+        ("fish_lake_golden_bass", "Golden Bass"), ("fish_ocean_golden_manta_ray", "Golden Manta Ray"),
+        ("fish_rain_leedsichthys", "Leedsichthys"), ("wtrash_diamond", "Diamond"),
+    ],
+    "spectral": [
+        ("fish_rain_anomalocaris", "Anomalocaris"), ("fish_rain_horseshoe_crab", "Horseshoe Crab"),
+        ("fish_rain_heliocoprion", "Helicoprion"), ("fish_alien_dog", "UFO"), ("fish_void_voidfish", "Voidfish"),
+    ],
+}
+
+fish_sanity_categories = {tier: {} for tier in FISH_ROSTER}
+fish_sanity_offset: int = 96000
+
 populate_advancement_tables()
 
-all_advancements = standard_base | scqe | hard | hard_specific | camp_2 | camp_3 | camp_4 | spectral_shop
+fish_sanity_all = {}
+for _tier_dict in fish_sanity_categories.values():
+    fish_sanity_all |= _tier_dict
+
+all_advancements = (standard_base | scqe | hard | hard_specific | camp_2 | camp_3 | camp_4 | spectral_shop |
+                    fish_sanity_all)

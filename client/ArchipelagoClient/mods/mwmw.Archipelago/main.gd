@@ -623,6 +623,7 @@ func _on_connected(slot_data):
 	Config.mode = slot_data.game_mode
 	Config.chance_eq = float(slot_data.fish_chance_equalizer) / 100
 	Config.auto_hint = slot_data.auto_hint
+	Config.fish_sanity = slot_data.fish_sanity
 	
 	# adjusting game state based on config options
 	if Config.mode == Config.Gamemode.ALT:
@@ -643,13 +644,55 @@ func _on_connected(slot_data):
 func _sync_state():
 	# sending all stored locations
 	# and checking if victory has been met
-	
+
 	NetworkManager.send_checks(NetworkManager.checked_locations)
-	
+
+	if Config.fish_sanity:
+		scan_fish_sanity()
+
 	if (Config.current_goal == Config.Goal.RANK and PlayerData.badge_level >= Config.rank_goal) \
 	or (Config.current_goal == Config.Goal.TOTAL_COMPLETION and _get_journal_completion() >= Config.total_completion_goal) \
 	or (Config.current_goal == Config.Goal.COMPLETED_CAMP and PlayerData.loan_level >= 3):
 		send_victory()
+
+
+func _quality_index(q):
+	# catch_data["quality"] entries are expected to be ints, but fall back to matching
+	# against Config.FISH_QUALITIES by name in case they're stored as strings
+	if typeof(q) == TYPE_INT or typeof(q) == TYPE_REAL:
+		return int(q)
+	if typeof(q) == TYPE_STRING:
+		return Config.FISH_QUALITIES.find(q.capitalize())
+	return -1
+
+
+func scan_fish_sanity():
+	# walks the full journal (same traversal as _get_journal_completion) and sends a check
+	# for any (species, quality) combo we haven't already sent one for. Reused on every
+	# catch (via FishSanityCheck.cs) and once on connect, so old saves catch up retroactively.
+	if not Config.fish_sanity:
+		return
+
+	var new_checks = []
+	for cat in PlayerData.journal_logs.keys():
+		for key in PlayerData.journal_logs[cat].keys():
+			if not Config.FISH_SANITY_ID.has(key):
+				continue
+
+			var ids = Config.FISH_SANITY_ID[key]
+			var catch_data = PlayerData.journal_logs[cat][key]
+
+			for q in catch_data["quality"]:
+				var quality_index = _quality_index(q)
+				if quality_index < 0 or quality_index >= ids.size():
+					continue
+
+				var loc_id = ids[quality_index]
+				if not NetworkManager.checked_locations.has(float(loc_id)) and not new_checks.has(loc_id):
+					new_checks.append(loc_id)
+
+	if new_checks.size() > 0:
+		NetworkManager.send_checks(new_checks)
 
 
 func _get_journal_completion():

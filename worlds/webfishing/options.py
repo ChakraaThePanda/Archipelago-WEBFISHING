@@ -107,6 +107,18 @@ class AutoHint(Toggle):
     default = 0
 
 
+class FishSanity(Toggle):
+    """
+    Adds a check for the first catch of everything catchable (fish and junk alike) at
+    every quality tier (Normal, Shining, Glistening, Opulent, Radiant, Alpha).
+
+    This adds a large number of additional locations (468) on top of everything
+    else, so expect a much longer, more filler-heavy item pool with this enabled.
+    """
+    display_name = "Fish Sanity"
+    default = 0
+
+
 @dataclass
 class WebfishingOptions(PerGameCommonOptions):
     goal: Goal
@@ -118,4 +130,5 @@ class WebfishingOptions(PerGameCommonOptions):
     # gcq_hard_count: GCQHardCount
     fish_chance_equalizer: FishChanceEqualizer
     auto_hint: AutoHint
+    fish_sanity: FishSanity
     # death_link: DeathLink

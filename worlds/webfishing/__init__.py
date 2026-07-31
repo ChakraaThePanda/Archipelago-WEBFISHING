@@ -4,17 +4,30 @@ from .options import WebfishingOptions
 from .items import (WebfishingItem, WebfishingItemData, item_table, fixed_quantities, rods, filler_weights)
 from .locations import (WebfishingAdvancement, standard_base, harmonised_base, scqe, hard, hard_specific, camp_2,
                         camp_3, camp_4, all_advancements, traveler, collector, shining, glistening, opulent, radiant,
-                        alpha, prosperous, spectral, spectral_shop)
-from worlds.AutoWorld import World
+                        alpha, prosperous, spectral, spectral_shop, fish_sanity_categories, fish_sanity_all,
+                        FISH_QUALITIES)
+from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import set_rule
-from BaseClasses import Region, Item
+from BaseClasses import Region, Item, Tutorial
 from Utils import visualize_regions
+
+
+class WebfishingWeb(WebWorld):
+    tutorials = [Tutorial(
+        "Multiworld Setup Guide",
+        "A guide to setting up WEBFISHING for Archipelago multiworld play.",
+        "English",
+        "setup_en.md",
+        "setup/en",
+        ["Miyowi", "ChakraaThePanda"],
+    )]
 
 
 class WebfishingWorld(World):
     """WEBFISHING is a multiplayer chatroom-focused fishing game! Relax and fish (on the web!)"""
 
     game = "WEBFISHING"
+    web = WebfishingWeb()
     options_dataclass = WebfishingOptions  # options the player can set
     options: WebfishingOptions  # typing hints for option results
     # settings: typing.ClassVar[MyGameSettings]  # will be automatically assigned from type hint
@@ -25,6 +38,21 @@ class WebfishingWorld(World):
     # include events, but don't have to since events will be placed manually.
     item_name_to_id = {name: data.code for name, data in item_table.items()}
     location_name_to_id = {name: data.id for name, data in all_advancements.items()}
+
+    def _fish_sanity_locations(self, tier, region):
+        # Quality tiers beyond Normal are gated by which bait you've unlocked (bait N
+        # guarantees/enables quality N: worms=Normal, cricket=Shining, leech=Glistening,
+        # minnow=Opulent, squid=Radiant, nautilus/gildedworm=Alpha) - this applies
+        # uniformly regardless of tier, including "simple" junk items.
+        locs = []
+        for loc_name, loc_data in fish_sanity_categories[tier].items():
+            loc = WebfishingAdvancement(self.player, loc_name, loc_data.id, region)
+            quality = loc_name.rsplit(" (", 1)[1][:-1]
+            quality_index = FISH_QUALITIES.index(quality)
+            if quality_index > 0:
+                set_rule(loc, lambda state, q=quality_index: state.has("Progressive Bait", self.player, q))
+            locs.append(loc)
+        return locs
 
     def create_regions(self) -> None:
 
@@ -77,6 +105,16 @@ class WebfishingWorld(World):
                 spectral_shop_region.locations += [WebfishingAdvancement(self.player, loc_name, loc_data.id,
                                                                          spectral_shop_region)
                                                    for loc_name, loc_data in spectral_shop.items()]
+
+                # Fishsanity (first catch of every fish x quality, tucked into difficulty-equivalent regions
+                # since Classic mode has no rod-specific regions to slot them into)
+                if bool(self.options.fish_sanity.value):
+                    for tier in ("simple", "traveler", "collector"):
+                        base_region.locations += self._fish_sanity_locations(tier, base_region)
+                    for tier in ("shining", "glistening"):
+                        medium_region.locations += self._fish_sanity_locations(tier, medium_region)
+                    for tier in ("opulent", "radiant", "alpha", "prosperous", "spectral"):
+                        hard_region.locations += self._fish_sanity_locations(tier, hard_region)
 
                 self.multiworld.regions += [menu_region, base_region, medium_region, hard_region, hard_specific_region,
                                             camp_2_region, camp_3_region, camp_4_region, spectral_shop_region]
@@ -179,6 +217,18 @@ class WebfishingWorld(World):
                 spectral_shop_region.locations += [WebfishingAdvancement(self.player, loc_name, loc_data.id,
                                                                          spectral_shop_region)
                                                    for loc_name, loc_data in spectral_shop.items()]
+
+                # Fishsanity (first catch of every fish x quality, one tier per rod region -
+                # except "simple", which is the starter rod's junk pool and needs no item at all)
+                if bool(self.options.fish_sanity.value):
+                    base_region.locations += self._fish_sanity_locations("simple", base_region)
+
+                    for tier, region in (("traveler", traveler_region), ("collector", collector_region),
+                                        ("shining", shining_region), ("glistening", glistening_region),
+                                        ("opulent", opulent_region), ("radiant", radiant_region),
+                                        ("alpha", alpha_region), ("prosperous", prosperous_region),
+                                        ("spectral", spectral_region)):
+                        region.locations += self._fish_sanity_locations(tier, region)
 
                 self.multiworld.regions += [menu_region, base_region, traveler_region, medium_region, hard_region,
                                             collector_region, shining_region, glistening_region, opulent_region,
@@ -301,7 +351,18 @@ class WebfishingWorld(World):
                 self.multiworld.itempool.append(item)
 
         # filling in remaining slots with junk
-        filler_quantity = len(all_advancements) - sum(fixed_quantities.values())
+        # (counted from the locations actually placed into regions this seed, not the static
+        # all_advancements total, since hard_specific/fish_sanity are conditional on options)
+        placed_locations = len(standard_base) + len(scqe) + len(hard) + len(camp_2) + len(camp_3) + \
+                           len(camp_4) + len(spectral_shop)
+        # rare_fish_checks only gates Hard Specific in Classic mode - Harmonized always places these
+        # via their rod-tier regions regardless of the toggle
+        if self.options.game_mode.value == 1 or bool(self.options.rare_fish_checks.value):
+            placed_locations += len(hard_specific)
+        if bool(self.options.fish_sanity.value):
+            placed_locations += len(fish_sanity_all)
+
+        filler_quantity = placed_locations - sum(fixed_quantities.values())
         if self.options.game_mode.value == 1:
             filler_quantity -= sum(rods.values())
 
@@ -317,4 +378,4 @@ class WebfishingWorld(World):
 
     def fill_slot_data(self) -> Dict[str, Any]:
         return self.options.as_dict("goal", "total_completion", "rank", "game_mode", "rare_fish_checks",
-                                    "fish_chance_equalizer", "auto_hint")
+                                    "fish_chance_equalizer", "auto_hint", "fish_sanity")
