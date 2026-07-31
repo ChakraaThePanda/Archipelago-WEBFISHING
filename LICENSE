@@ -1,0 +1,43 @@
+This repository is a fork of https://github.com/mwoiii/webfishing-ap ("upstream"),
+which has not published a license. Absent a license, upstream's original code
+remains "all rights reserved" by its author under default copyright law.
+
+The MIT License below applies ONLY to the following files, which were authored
+in full by ChakraaThePanda and contain no code from upstream:
+
+  - .gitignore
+  - tools/build_apworld.py
+  - tools/build_mod.py
+  - client/mwmw.Archipelago/mwmw.Archipelago/FishSanityCheck.cs
+  - worlds/webfishing/.gitignore
+  - worlds/webfishing/archipelago.json
+  - worlds/webfishing/docs/en_WEBFISHING.md
+  - worlds/webfishing/docs/setup_en.md
+
+All other files in this repository are modified or unmodified copies of
+upstream's code and are NOT covered by this license. They remain subject to
+upstream's rights, pending upstream publishing its own license terms.
+
+---
+
+MIT License
+
+Copyright (c) 2026 ChakraaThePanda
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the software listed above ("the Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
