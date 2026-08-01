@@ -1,5 +1,8 @@
 # Archipelago WEBFISHING
 
+> [!NOTE]
+> This version doesn't follow the original creator's vision and is used for personal purposes. If you want to use the original version without the use of AI anywhere in the project, you can head to the [original repo](https://github.com/mwoiii/webfishing-ap).
+
 An [Archipelago](https://archipelago.gg) randomizer for **[WEBFISHING](https://store.steampowered.com/app/3146520/WEBFISHING/)**.
 Get checks from quests and shop purchases; receive rod/bait upgrades, camp tier unlocks, lures,
 consumables, money, and spectral bones from the multiworld.
