@@ -1,4 +1,4 @@
-# Archipelago WEBFISHING
+# Archipelago-WEBFISHING
 
 > [!NOTE]
 > This version doesn't follow the original creator's vision and is used for personal purposes. If you want to use the original version without the use of AI anywhere in the project, you can head to the [original repo](https://github.com/mwoiii/webfishing-ap).
