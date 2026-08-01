@@ -24,7 +24,10 @@ class WebfishingWeb(WebWorld):
 
 
 class WebfishingWorld(World):
-    """WEBFISHING is a multiplayer chatroom-focused fishing game! Relax and fish (on the web!)"""
+    """WEBFISHING is a multiplayer chatroom-focused fishing game! Relax and fish (on the web!) Get checks from
+    quests and shop purchases; receive rod/bait upgrades, camp tier unlocks, lures, consumables, money, and
+    spectral bones from the multiworld. Originally created by Miyowi; this fork continues development, adding a
+    FishSanity option (a check for every species x quality tier combination) among other changes."""
 
     game = "WEBFISHING"
     web = WebfishingWeb()
