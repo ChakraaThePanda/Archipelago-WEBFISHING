@@ -44,16 +44,19 @@ class WebfishingWorld(World):
         # guarantees/enables quality N: worms=Normal, cricket=Shining, leech=Glistening,
         # minnow=Opulent, squid=Radiant, nautilus/gildedworm=Alpha) - this applies
         # uniformly regardless of tier, including "simple" junk items.
-        # Glistening and up also need Progressive Rod Power to actually land the fight
-        # (1/2/3/4 for Glistening/Opulent/Radiant/Alpha) - out of 8 total in the pool,
-        # kept well under the 5 the Hard region entrance already demands.
+        # Shining and up also need Progressive Rod Power to actually land the fight:
+        # 1/2/3 for Shining/Glistening/Opulent, then a steeper 5/7 for Radiant/Alpha -
+        # out of 8 total in the pool. Radiant and Alpha intentionally sit above the 5
+        # the Hard region entrance already demands, so landing them isn't guaranteed
+        # by logic even though it's technically possible with the full item pool.
+        rod_power_by_quality = [0, 1, 2, 3, 5, 7]
         locs = []
         for loc_name, loc_data in fish_sanity_categories[tier].items():
             loc = WebfishingAdvancement(self.player, loc_name, loc_data.id, region)
             quality = loc_name.rsplit(" (", 1)[1][:-1]
             quality_index = FISH_QUALITIES.index(quality)
             if quality_index > 0:
-                rod_power = max(0, quality_index - 1)
+                rod_power = rod_power_by_quality[quality_index]
                 set_rule(loc, lambda state, q=quality_index, p=rod_power:
                          state.has("Progressive Bait", self.player, q) and
                          state.has("Progressive Rod Power", self.player, p))
