@@ -261,7 +261,7 @@ FISH_ROSTER = {
     ],
     "spectral": [
         ("fish_rain_anomalocaris", "Anomalocaris"), ("fish_rain_horseshoe_crab", "Horseshoe Crab"),
-        ("fish_rain_heliocoprion", "Helicoprion"), ("fish_alien_dog", "UFO"), ("fish_void_voidfish", "Voidfish"),
+        ("fish_rain_heliocoprion", "Helicoprion"), ("fish_alien_dog", "UFO"), ("fish_void_voidfish", "CREATURE"),
     ],
 }
 

@@ -306,7 +306,7 @@ func get_harmonized_rod_desc(item_id):
 		"fishing_rod_collectors_alpha":
 			return "Catches:\n[color=#cfffd2]Alligator, Bullshark, Whale, Coelacanth[/color]"
 		"fishing_rod_skeleton":
-			return "Catches:\n[color=#cfffd2]Anomalocaris, Horseshoe Crab, Heliocoprion, UFO, Voidfish[/color] (under their respective conditions)"
+			return "Catches:\n[color=#cfffd2]Anomalocaris, Horseshoe Crab, Heliocoprion, UFO, CREATURE[/color] (under their respective conditions)"
 		"fishing_rod_prosperous":
 			return "Catches:\n[color=#cfffd2]Golden Bass, Diamond, Golden Manta Ray, Leedsichthys[/color]"
 

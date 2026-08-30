@@ -26,4 +26,4 @@ Alligator, Bullshark, Whale, Coelacanth
 Golden Bass, Diamond, Golden Manta Ray, Leedsichthys
 
 ### Spectral Rod
-Anomalocaris, Horseshoe Crab, Heliocoprion, UFO, Voidfish
+Anomalocaris, Horseshoe Crab, Heliocoprion, UFO, CREATURE
