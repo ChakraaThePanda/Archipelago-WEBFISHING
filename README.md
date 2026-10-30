@@ -16,3 +16,9 @@ consumables, money, and spectral bones from the multiworld.
 
 Originally created by [Miyowi](https://github.com/mwoiii), with fishing-quality tweaks
 integrated from [Eszenn's Archipelago Tweaks mod](https://github.com/Eszenn/Webfishing-Archipelago-Tweaks).
+
+---
+
+### Questions or feedback?
+
+Need help, found a bug, or have an idea? Join my Discord server, [Chakraa's Projects](https://discord.gg/bkk4nVXcjm), and post in this project's channel.
